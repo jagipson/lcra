@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/html"
 	"net/http"
 	"os"
-	//"strings"
+	"strings"
 )
 
 func main() {
@@ -24,6 +24,7 @@ func main() {
 
 	headers := []string{}
 	data := []string{}
+	var spool *[]string
 	// this for loop searches for table#GridView2
 top:
 	for {
@@ -57,13 +58,15 @@ top:
 				case tt == html.EndTagToken && t.Data == "table":
 					break top
 				case tt == html.StartTagToken && t.Data == "th":
-					z.Next()
-					t := z.Token()
-					headers = append(headers, t.Data)
+					spool = &headers
 				case tt == html.StartTagToken && t.Data == "td":
-					z.Next()
-					t := z.Token()
-					data = append(data, t.Data)
+					spool = &data
+				case tt == html.TextToken && spool != nil:
+					field := strings.TrimSpace(t.Data)
+					if len(field) == 0 {
+						continue
+					}
+					*spool = append(*spool, field)
 				}
 			}
 		}
