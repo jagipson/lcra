@@ -1,0 +1,15 @@
+#!/bin/bash
+
+~/go/bin/floodgates | sed -n -e '/Lake\/Dam: Travis\/Mansfield/,+4 {1,+3 d; p}' \
+	-e '/Lake\/Dam: Buch/,+4 {1,+3 d; p}' > /tmp/damstatus_msg
+echo -e "\nMonitoring only floodgates at Mansfield and Buchanan" >> /tmp/damstatus_msg
+
+sed -n 's/.*, \(.*\)/\1/p' < /tmp/damstatus_msg > /tmp/damstatus_cur
+
+if ! diff -q /tmp/damstatus_{cur,old}; then
+    ~/bin/prowl.pl -apikeyfile=$HOME/.prowlkey \
+    -application="Floodgate Operations" \
+   	-notification="$(</tmp/damstatus_msg)" \
+    -event="Status update"
+fi
+cp /tmp/damstatus_{cur,old}
