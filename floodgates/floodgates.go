@@ -3,10 +3,11 @@ package main
 
 import (
 	"fmt"
-	"golang.org/x/net/html"
 	"net/http"
 	"os"
 	"strings"
+
+	"golang.org/x/net/html"
 )
 
 func main() {
@@ -47,7 +48,7 @@ top:
 					break
 				}
 			}
-			if id != "GridView2" {
+			if id != "ContentSection_GridView2" {
 				continue
 			}
 			// This for loop processes until </table> is reached
